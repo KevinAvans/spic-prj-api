@@ -3,10 +3,10 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("spic-groep-m")
+project ("spic-prj-api")
 
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_executable(spic-groep-m Main.cpp)
+add_executable(spic-groep-m Main.cpp "ECS/Event.hpp")
 target_link_libraries(spic-groep-m ${SDL2_LIBRARIES})
