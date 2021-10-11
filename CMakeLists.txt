@@ -8,5 +8,5 @@ project ("spic-prj-api")
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_executable(spic-groep-m Main.cpp "ECS/Event.hpp")
+add_executable(spic-groep-m Main.cpp)
 target_link_libraries(spic-groep-m ${SDL2_LIBRARIES})
