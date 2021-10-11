@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
 
-    SDL_Delay(2000);
+    SDL_Delay(200);
 
 
 
@@ -144,7 +144,8 @@ int main(int argc, char* argv[])
 
 	float dt = 0.0f;
 
-	while (true)
+	bool quit = false;
+	while (!quit)
 	{
 		auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -153,6 +154,46 @@ int main(int argc, char* argv[])
 		auto stopTime = std::chrono::high_resolution_clock::now();
 
 		dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
+
+
+
+		for (auto& entity : entities) {
+
+
+			auto& rigidBody = gCoordinator.GetComponent<RigidBodyECS>(entity);
+			auto& transform = gCoordinator.GetComponent<Transform>(entity);
+			auto const& gravity = gCoordinator.GetComponent<Gravity>(entity);
+
+			int scale = 5;
+			SDL_Rect rect;
+			rect.x = transform.position.x * scale;
+			rect.y = transform.position.y * scale;
+			rect.w = transform.scale.x * scale;
+			rect.h = transform.scale.y * scale;
+			SDL_SetRenderDrawColor(renderer, entity / 2, 255, 255, entity / 2);
+			SDL_RenderDrawRect(renderer, &rect);
+			//// SDL_RenderDraw
+
+
+			//Event handler
+			SDL_Event e;
+			 //Handle events on queue
+			while (SDL_PollEvent(&e) != 0)
+			{
+				//User requests quit
+				if (e.type == SDL_QUIT)
+				{
+					quit = true;
+				}
+			}
+
+			
+
+		}
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderPresent(renderer);
+		SDL_RenderClear(renderer);
+
 	}
 
 
