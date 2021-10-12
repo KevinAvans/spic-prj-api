@@ -12,6 +12,7 @@
 #include <random>
 #include <chrono>
 #include <iostream>
+#include <string>
 
 // A simple type alias
 using Entity = std::uint32_t;
@@ -85,11 +86,6 @@ int main(int argc, char* argv[])
 
 
 
-
-
-
-
-
 	gCoordinator.Init();
 
 	gCoordinator.RegisterComponent<Gravity>();
@@ -107,15 +103,18 @@ int main(int argc, char* argv[])
 	std::vector<Entity> entities(MAX_ENTITIES);
 
 	std::default_random_engine generator;
-	std::uniform_real_distribution<float> randPosition(-100.0f, 100.0f);
+	std::uniform_real_distribution<float> randPosition(0.0f, 100.0f);
 	std::uniform_real_distribution<float> randRotation(0.0f, 3.0f);
-	std::uniform_real_distribution<float> randScale(3.0f, 5.0f);
-	std::uniform_real_distribution<float> randGravity(-10.0f, -1.0f);
+	std::uniform_real_distribution<float> randScale(4.0f, 8.0f);
+	std::uniform_real_distribution<float> randGravity(5.0f, 15.0f);
 
-	float scale = randScale(generator);
+	
 
 	for (auto& entity : entities)
 	{
+
+		float scale = randScale(generator);
+
 		entity = gCoordinator.CreateEntity();
 		std::cout << entity << std::endl;
 
@@ -145,8 +144,18 @@ int main(int argc, char* argv[])
 	float dt = 0.0f;
 
 	bool quit = false;
+
+	int fpsTimer = 0;
+
 	while (!quit)
 	{
+		Uint64 start = SDL_GetPerformanceCounter();
+
+
+
+
+
+
 		auto startTime = std::chrono::high_resolution_clock::now();
 
 		physicsSystem->Update(dt);
@@ -164,13 +173,18 @@ int main(int argc, char* argv[])
 			auto& transform = gCoordinator.GetComponent<Transform>(entity);
 			auto const& gravity = gCoordinator.GetComponent<Gravity>(entity);
 
-			int scale = 5;
+			;
 			SDL_Rect rect;
-			rect.x = transform.position.x * scale;
-			rect.y = transform.position.y * scale;
-			rect.w = transform.scale.x * scale;
-			rect.h = transform.scale.y * scale;
-			SDL_SetRenderDrawColor(renderer, entity / 2, 255, 255, entity / 2);
+			rect.x = transform.position.x * transform.scale.x;
+			rect.y = transform.position.y * transform.scale.y;
+			rect.w = transform.scale.x * transform.scale.x;
+			rect.h = transform.scale.y * transform.scale.y;
+
+			
+
+			int colorScale = float(entity) / (float)entities.size() * (float) 255;
+
+			SDL_SetRenderDrawColor(renderer, colorScale, colorScale, 255, colorScale);
 			SDL_RenderDrawRect(renderer, &rect);
 			//// SDL_RenderDraw
 
@@ -193,6 +207,23 @@ int main(int argc, char* argv[])
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderPresent(renderer);
 		SDL_RenderClear(renderer);
+
+
+
+		Uint64 end = SDL_GetPerformanceCounter();
+
+
+		fpsTimer++;
+
+		if (fpsTimer > 20) {
+			float elapsed = (end - start) / (float)SDL_GetPerformanceFrequency();
+			std::cout << "Current FPS: " << std::to_string(1.0f / elapsed) << std::endl;
+			fpsTimer = 0;
+		}
+
+
+
+
 
 	}
 
